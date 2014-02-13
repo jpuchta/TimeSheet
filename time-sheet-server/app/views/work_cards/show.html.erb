@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Start:</strong>
+  <%= @work_card.start %>
+</p>
+
+<p>
+  <strong>End:</strong>
+  <%= @work_card.end %>
+</p>
+
+<p>
+  <strong>Multiplyier:</strong>
+  <%= @work_card.multiplyier %>
+</p>
+
+<%= link_to 'Edit', edit_work_card_path(@work_card) %> |
+<%= link_to 'Back', work_cards_path %>

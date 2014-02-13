@@ -1,0 +1,31 @@
+<h1>Listing work_cards</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Start</th>
+      <th>End</th>
+      <th>Multiplyier</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @work_cards.each do |work_card| %>
+      <tr>
+        <td><%= work_card.start %></td>
+        <td><%= work_card.end %></td>
+        <td><%= work_card.multiplyier %></td>
+        <td><%= link_to 'Show', work_card %></td>
+        <td><%= link_to 'Edit', edit_work_card_path(work_card) %></td>
+        <td><%= link_to 'Destroy', work_card, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Work card', new_work_card_path %>

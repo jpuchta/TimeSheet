@@ -1,0 +1,2 @@
+module WorkCardsHelper
+end
