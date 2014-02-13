@@ -1,4 +1,0 @@
-{
-  "name": "mongodb-experiments"
-, "files": [ { "directory": ".", "recoursive":1 }]
-}
