@@ -1,0 +1,42 @@
+﻿Plan działania
+
+A. Serwer
+Serwer ma zapewnić bazę danych przechowującą informacje o kartach pracy. Powinna być też możliwość tworzenia użytwkowników - każdy użytkownik ma swoje karty pracy. Serwer wyświetla też raporty. W dalszej perspektywie pozwala dodawać schematy czasu pracy i w ramach ustalonego schematu rozliczać karty pracy.
+|                                           Punkty      czas
+|--> Obsługa kart pracy
+| |--> Tworzę nową pustą kartę pracy        0           1
+| |--> start i stop, pause                  1           2
+| |--> Edytuję kartę pracy, zapisuje się,   1           3
+| |      że edytowana.
+| '--> wyświetlam kartę pracy               0           1
+|--> Obsługa użytkowników
+| |--> Tworzenie użytkowników               0           1
+| |--> Logowanie                            1           4
+| |--> Użytkownik może tworzyć swoje        0           1
+| |      (i tylko swoje) karty pracy
+| |--> Użytkownik wyświetla swój stan       2           6
+| '--> ...
+|--> Ładny międzytwarzacz                   3           10
+|
+| .
+| .
+| .
+|
+|--> Schematy czasu pracy
+| |--> Tworzenie schematów czasu pracy
+| |--> Ustawianie użytkownikowi schematu
+| |--> Interpretowanie kart pracy w kontekście schematu
+
+B. Plugin
+Pozwala zarządzać moimi kartami pracy z poziomu przeglądarki
+|
+|--> Logowanie jako użytkownik
+|--> Wyświetlanie strony po kliknięciu na odpowiednią ikonkę
+|--> przyciski start, stop, pause, obsługa danych potrzebnych do wygenerowania karty pracy - po stronie klienta
+|--> Dodatkowy feature: śledzenie kart
+| |--> automatyczna pause przy wejściu na niektóre witryny
+| |--> edycja katalogu witryn pauzujących
+. .
+. .
+. .
+

@@ -13,7 +13,10 @@
   </thead>
 
   <tbody>
-    <% @work_cards.each do |work_card| %>
+    <% if @work_cards.empty? %>
+      <p>No work-cards.</p>
+    <% else %>
+	<% @work_cards.each do |work_card| %>
       <tr>
         <td><%= work_card.start %></td>
         <td><%= work_card.end %></td>
@@ -22,6 +25,7 @@
         <td><%= link_to 'Edit', edit_work_card_path(work_card) %></td>
         <td><%= link_to 'Destroy', work_card, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
+      <% end %>
     <% end %>
   </tbody>
 </table>
