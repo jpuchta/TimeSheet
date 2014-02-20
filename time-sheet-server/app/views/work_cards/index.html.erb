@@ -3,9 +3,9 @@
 <table>
   <thead>
     <tr>
-      <th>Start</th>
-      <th>End</th>
-      <th>Multiplyier</th>
+      <th>Start at</th>
+      <th>End at</th>
+      <th>Pause</th>
       <th></th>
       <th></th>
       <th></th>
@@ -13,19 +13,15 @@
   </thead>
 
   <tbody>
-    <% if @work_cards.empty? %>
-      <p>No work-cards.</p>
-    <% else %>
-	<% @work_cards.each do |work_card| %>
+    <% @work_cards.each do |work_card| %>
       <tr>
-        <td><%= work_card.start %></td>
-        <td><%= work_card.end %></td>
-        <td><%= work_card.multiplyier %></td>
+        <td><%= work_card.start_at %></td>
+        <td><%= work_card.end_at %></td>
+        <td><%= work_card.pause %></td>
         <td><%= link_to 'Show', work_card %></td>
         <td><%= link_to 'Edit', edit_work_card_path(work_card) %></td>
         <td><%= link_to 'Destroy', work_card, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
-      <% end %>
     <% end %>
   </tbody>
 </table>

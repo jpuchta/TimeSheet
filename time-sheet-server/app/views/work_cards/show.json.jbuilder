@@ -1,1 +1,1 @@
-json.extract! @work_card, :id, :start, :end, :multiplyier, :created_at, :updated_at
+json.extract! @work_card, :id, :start_at, :end_at, :pause, :created_at, :updated_at

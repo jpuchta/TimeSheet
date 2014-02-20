@@ -69,6 +69,6 @@ class WorkCardsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def work_card_params
-      params.require(:work_card).permit(:start, :end, :multiplyier)
+      params.require(:work_card).permit(:start_at, :end_at, :pause)
     end
 end
