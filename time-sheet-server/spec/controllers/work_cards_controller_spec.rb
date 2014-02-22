@@ -31,24 +31,30 @@ describe WorkCardsController do
   # This should return the minimal set of attributes required to create a valid
   # WorkCard. As you add validations to WorkCard, be sure to
   # adjust the attributes here as well.
-  let(:valid_attributes) { { "start_at" => "" } }
+  let(:valid_attributes) { { "start_at" => "", "end_at" => "", "pause" => "" } }
+  let(:work_card_id) { valid_attributes.to_param }
 
   # This should return the minimal set of values that should be in the session
   # in order to pass any filters (e.g. authentication) defined in
   # WorkCardsController. Be sure to keep this updated too.
   let(:valid_session) { {} }
 
+
+
   describe "GET index" do
     it "assigns all work_cards as @work_cards" do
-      work_card = WorkCard.create! valid_attributes
+      work_card = double(:work_card, valid_attributes)
+      work_cards = [work_card]
+      WorkCard.should receive(:all).and_return(work_cards)
       get :index, {}, valid_session
-      assigns(:work_cards).to_a.should eq([work_card])
+      expect(assigns(:work_cards)).to eq(work_cards)
     end
   end
 
   describe "GET show" do
     it "assigns the requested work_card as @work_card" do
-      work_card = WorkCard.create! valid_attributes
+      work_card = double(:work_card, valid_attributes)
+      WorkCard.should receive(:find).with(work_card.to_param).and_return(work_card)
       get :show, {:id => work_card.to_param}, valid_session
       assigns(:work_card).should eq(work_card)
     end
@@ -63,7 +69,8 @@ describe WorkCardsController do
 
   describe "GET edit" do
     it "assigns the requested work_card as @work_card" do
-      work_card = WorkCard.create! valid_attributes
+      work_card = double(:work_card, valid_attributes)
+      WorkCard.should receive(:find).with(work_card.to_param).and_return(work_card)
       get :edit, {:id => work_card.to_param}, valid_session
       assigns(:work_card).should eq(work_card)
     end
@@ -71,19 +78,24 @@ describe WorkCardsController do
 
   describe "POST create" do
     describe "with valid params" do
-      it "creates a new WorkCard" do
-        expect {
-          post :create, {:work_card => valid_attributes}, valid_session
-        }.to change(WorkCard, :count).by(1)
+      it "creates a new WorkCard and assignes it as @work_card" do #I do not know, how to decompose it into two seperate tests?
+        work_card = double(:work_card, valid_attributes)
+        WorkCard.should receive(:new).and_return(work_card)
+        work_card.should receive(:save).once
+        post :create, {:work_card => valid_attributes}, valid_session
       end
 
+=begin
       it "assigns a newly created work_card as @work_card" do
+        work_card = double(:work_card, valid_attributes)
+        WorkCard.should receive(:new).and_return(work_card)
         post :create, {:work_card => valid_attributes}, valid_session
         assigns(:work_card).should be_a(WorkCard)
         assigns(:work_card).should be_persisted
       end
+=end
 
-      it "redirects to the created work_card" do
+      it "redirects to the created work_card" do #I do not know, how to use mocks here?
         post :create, {:work_card => valid_attributes}, valid_session
         response.should redirect_to(WorkCard.last)
       end
@@ -109,22 +121,21 @@ describe WorkCardsController do
   describe "PUT update" do
     describe "with valid params" do
       it "updates the requested work_card" do
-        work_card = WorkCard.create! valid_attributes
-        # Assuming there are no other work_cards in the database, this
-        # specifies that the WorkCard created on the previous line
-        # receives the :update_attributes message with whatever params are
-        # submitted in the request.
-        WorkCard.any_instance.should_receive(:update).with({ "start_at" => "" })
+        work_card = double(:work_card, valid_attributes)
+        WorkCard.should receive(:find).with(work_card.to_param).and_return(work_card)
+        work_card.should_receive(:update).with({ "start_at" => "" })
         put :update, {:id => work_card.to_param, :work_card => { "start_at" => "" }}, valid_session
       end
 
       it "assigns the requested work_card as @work_card" do
-        work_card = WorkCard.create! valid_attributes
+        work_card = double(:work_card, valid_attributes)
+        WorkCard.should receive(:find).with(work_card.to_param).and_return(work_card)
+        work_card.should_receive(:update).with(valid_attributes)
         put :update, {:id => work_card.to_param, :work_card => valid_attributes}, valid_session
         assigns(:work_card).should eq(work_card)
       end
 
-      it "redirects to the work_card" do
+      it "redirects to the work_card" do  #I do not know, how to use mocks here?
         work_card = WorkCard.create! valid_attributes
         put :update, {:id => work_card.to_param, :work_card => valid_attributes}, valid_session
         response.should redirect_to(work_card)
@@ -133,7 +144,9 @@ describe WorkCardsController do
 
     describe "with invalid params" do
       it "assigns the work_card as @work_card" do
-        work_card = WorkCard.create! valid_attributes
+        work_card = double(:work_card, valid_attributes)
+        WorkCard.should receive(:find).with(work_card.to_param).and_return(work_card)
+        work_card.should_receive(:update).with({ "start_at" => "invalid value" })
         # Trigger the behavior that occurs when invalid params are submitted
         WorkCard.any_instance.stub(:save).and_return(false)
         put :update, {:id => work_card.to_param, :work_card => { "start_at" => "invalid value" }}, valid_session
@@ -141,7 +154,9 @@ describe WorkCardsController do
       end
 
       it "re-renders the 'edit' template" do
-        work_card = WorkCard.create! valid_attributes
+        work_card = double(:work_card, valid_attributes)
+        WorkCard.should receive(:find).with(work_card.to_param).and_return(work_card)
+        work_card.should_receive(:update).with({ "start_at" => "invalid value" })
         # Trigger the behavior that occurs when invalid params are submitted
         WorkCard.any_instance.stub(:save).and_return(false)
         put :update, {:id => work_card.to_param, :work_card => { "start_at" => "invalid value" }}, valid_session
@@ -152,14 +167,16 @@ describe WorkCardsController do
 
   describe "DELETE destroy" do
     it "destroys the requested work_card" do
-      work_card = WorkCard.create! valid_attributes
-      expect {
-        delete :destroy, {:id => work_card.to_param}, valid_session
-      }.to change(WorkCard, :count).by(-1)
+      work_card = double(:work_card, valid_attributes)
+      WorkCard.should receive(:find).with(work_card.to_param).and_return(work_card)
+      work_card.should_receive(:destroy)
+      delete :destroy, {:id => work_card.to_param}, valid_session
     end
 
     it "redirects to the work_cards list" do
-      work_card = WorkCard.create! valid_attributes
+      work_card = double(:work_card, valid_attributes)
+      WorkCard.should receive(:find).with(work_card.to_param).and_return(work_card)
+      work_card.should_receive(:destroy)
       delete :destroy, {:id => work_card.to_param}, valid_session
       response.should redirect_to(work_cards_url)
     end
