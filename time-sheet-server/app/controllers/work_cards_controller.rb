@@ -37,6 +37,22 @@ class WorkCardsController < ApplicationController
     end
   end
 
+  # POST /work_cards/start
+  def start
+#    work_card_params = {}
+    @work_card = WorkCard.create("start_at" => Time.now())
+
+    respond_to do |format|
+      if @work_card.save
+        format.html { redirect_to @work_card, notice: 'Work card was successfully started.' }
+        format.json { render action: 'show', status: :created, location: @work_card }
+      else
+        format.html { render action: 'new' }
+        format.json { render json: @work_card.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   # PATCH/PUT /work_cards/1
   # PATCH/PUT /work_cards/1.json
   def update

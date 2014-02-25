@@ -23,7 +23,7 @@ describe WorkCardsController do
   @work_card
 
   before do
-    WorkCard.delete_all
+#    WorkCard.delete_all
   end
 
   after do
@@ -89,6 +89,7 @@ describe WorkCardsController do
         WorkCard.should receive(:new).and_return(@work_card)
         @work_card.should receive(:save).once
         post :create, {:work_card => valid_attributes}, valid_session
+        assigns(:work_card).should be(@work_card)
       end
 
 =begin
@@ -186,6 +187,33 @@ describe WorkCardsController do
       delete :destroy, {:id => @work_card.to_param}, valid_session
       response.should redirect_to(work_cards_url)
     end
+  end
+
+  describe "POST start" do
+    before do
+      @t=Time.now()
+      Time.stub(:now).and_return(@t)
+    end
+    describe "for non-existing work_card" do
+      it "creates a new WorkCard wit start_at set to Time.now() and assignes it as @work_card" do
+        set_valid_work_card
+        WorkCard.should receive(:create).with({"start_at" => @t}).and_return(@work_card)
+        @work_card.should receive(:save).once
+        post :start, valid_session
+        assigns(:work_card).should be(@work_card)
+      end
+
+      it "redirects to the work_card" do  #I do not know, how to use mocks here?
+        work_card = WorkCard.create! valid_attributes
+        put :update, {:id => work_card.to_param, :work_card => valid_attributes}, valid_session
+        response.should redirect_to(work_card)
+      end
+    end
+
+#    describe "for existing blank work_card" do
+ #     it "sets start_at to Time.now" do
+  #    end
+   # end
   end
 
 end

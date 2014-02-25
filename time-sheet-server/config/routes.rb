@@ -1,5 +1,11 @@
 TimeSheetServer::Application.routes.draw do
-  resources :work_cards
+  resources :work_cards #do
+
+#    post 'start', action: 'start'
+
+#  end
+  post 'work_cards/start' => 'work_cards#start', via: [:post]
+
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
