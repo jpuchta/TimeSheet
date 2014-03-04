@@ -1,5 +1,5 @@
 class WorkCardsController < ApplicationController
-  before_action :set_work_card, only: [:show, :edit, :update, :destroy]
+  before_action :set_work_card, only: [:show, :edit, :update, :destroy, :start]
 
   # GET /work_cards
   # GET /work_cards.json
@@ -38,17 +38,25 @@ class WorkCardsController < ApplicationController
   end
 
   # POST /work_cards/start
+  # POST /work_cards/1/start
   def start
-#    work_card_params = {}
-    @work_card = WorkCard.create("start_at" => Time.now())
+    work_card_params={"start_at" => Time.now()}
+
+    @work_card = WorkCard.new() unless @work_card
 
     respond_to do |format|
-      if @work_card.save
-        format.html { redirect_to @work_card, notice: 'Work card was successfully started.' }
-        format.json { render action: 'show', status: :created, location: @work_card }
-      else
-        format.html { render action: 'new' }
+      if @work_card.started?
+        @work_card.errors.add "Work card was already started"
+        format.html { render action: 'show' }
         format.json { render json: @work_card.errors, status: :unprocessable_entity }
+      else
+        if @work_card.update(work_card_params)
+          format.html { redirect_to @work_card, notice: 'Work card was successfully started.' }
+          format.json { render action: 'show', status: :created, location: @work_card }
+        else
+          format.html { render action: 'new' }
+          format.json { render json: @work_card.errors, status: :unprocessable_entity }
+        end
       end
     end
   end
@@ -80,7 +88,7 @@ class WorkCardsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_work_card
-      @work_card = WorkCard.find(params[:id])
+      @work_card = WorkCard.find(params[:id]) if params[:id]
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

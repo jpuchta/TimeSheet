@@ -1,3 +1,4 @@
+
 class WorkCard
   include Mongoid::Document
   field :start_at, type: Time
