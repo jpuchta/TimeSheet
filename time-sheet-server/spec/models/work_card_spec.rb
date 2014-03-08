@@ -45,6 +45,15 @@ describe WorkCard do
       end
     end
 =end
+    describe "initialization with all arguments" do
+      subject { WorkCard.new(start_at: start_time, end_at: end_time, pause: pause)}
+      it "should set start_at, end_at and pause to arguments" do
+        expect(subject.start_at).to eq(start_time)
+        expect(subject.end_at).to eq(end_time)
+        expect(subject.pause).to eq(pause)
+      end
+    end
+
   end
 
   describe "validations" do
@@ -78,6 +87,39 @@ describe WorkCard do
     end
   end
 
+  describe "mutators" do
+    describe "#set_start_at" do
+      subject { WorkCard.new()}
+      it "should change start_at" do
+        subject.set_start_at(start_time)
+        expect(subject.start_at).to eq(start_time)
+      end
+    end
+
+    describe "#set_end_at" do
+      subject { WorkCard.new() }
+      it "should change end_at" do
+        subject.set_end_at(end_time)
+        expect(subject.end_at).to eq(end_time)
+      end
+      it "should not ommit validations" do
+        subject.set_end_at(end_time)
+        expect(subject).to_not be_valid
+      end
+    end
+
+    describe "#set_pause" do
+      subject { WorkCard.new() }
+      it "should change pause" do
+        subject.set_pause(Time.at(30))
+        expect(subject.pause).to eq(Time.at(30))
+      end
+      it "should not ommit validations" do
+        subject.set_pause(Time.at(10))
+        expect(subject).to_not be_valid
+      end
+    end
+  end
 
  
   describe "#total_time" do
@@ -86,10 +128,117 @@ describe WorkCard do
       time=subject.total_time
       expect(time).to eq(60*16)
     end
-#    it "should give total time that was worked, including pauses, in seconds" do
-#	  subject {WorkCard.new(start_at: start_time, end_at: end_time, pause: pause)}
- #     time=subject.total_time
-  #    expect(time).to eq(60*15)
-   # end
+    it "should give total time that was worked, including pauses, in seconds" do
+	    subject.pause=pause
+      time=subject.total_time
+      expect(time).to eq(60*15)
+    end
   end
+
+
+
+  describe "#start!" do
+    describe "for work_card with empty start_at field" do
+      before do
+        Timecop.freeze(Time.now)
+      end
+      after do
+        Timecop.return
+      end
+      subject {WorkCard.new()}
+      it "should set the start_at field to Time.now" do
+        t=Time.now()
+        subject.start!
+        expect(subject.start_at).to eq(t)
+      end
+
+      it "should not add annything to errors" do
+        subject.start!
+        expect(subject.errors.empty?).to eq(true)
+      end
+
+      it "should return a truthy value" do
+        output = subject.start!
+        expect(output).to be
+      end
+    end
+
+    describe "for work_card with already set start_at field" do
+      subject {WorkCard.new(start_at: start_time)}
+      it "should not change the start_at field" do
+        subject.start!
+        expect(subject.start_at).to eq(start_time)
+      end
+
+      it "should set an errror 'Cannot start a WorkCard that was alredy started'" do
+        subject.start!
+        expect(subject.errors.full_messages).to eq(["Start! cannot start a WorkCard that was alredy started"])
+      end
+
+      it "should return a falsey value" do
+        output = subject.start!
+        expect(output).to_not be
+      end
+    end
+  end
+
+  describe "#end!" do
+    describe "for empty work_card" do
+      subject {WorkCard.new()}
+      it "should not change any fields of a work_card" do
+        subject.end!
+        check_work_card_fields(subject,nil,nil,Time.at(0))
+      end
+      it "should add add a note to errors" do
+        subject.end!
+        expect(subject.errors.full_messages).to eq(["End! cannot end a WorkCard that was not started"])
+      end
+      it "should return a falsey value" do
+        output = subject.end!
+        expect(output).to_not be
+      end
+    end
+
+    describe "for a started work_card" do
+      before do
+        Timecop.freeze(Time.now)
+      end
+      after do
+        Timecop.return
+      end
+      subject {WorkCard.new(start_at: start_time)}
+      it "should set end_at to Time.now() and not change other fields" do
+        t=Time.now()
+        subject.end!
+        check_work_card_fields(subject,start_time,t,Time.at(0))
+#        expect(subject.end_at).to eq(t)
+      end
+      it "should not add annything to errors" do
+        subject.end!
+        expect(subject.errors).to be_empty
+      end
+      it "should return a truthy value" do
+        output = subject.end!
+        expect(output).to be
+      end
+    end
+
+    describe "for ended work_card" do
+      subject {WorkCard.new(start_at:start_time, end_at:end_time)}
+      it "should not change any fields of a work_card" do
+        subject.end!
+        check_work_card_fields(subject,start_time,end_time,Time.at(0))
+      end
+      it "should add add a note to errors" do
+        subject.end!
+        expect(subject.errors.full_messages).to eq(["End! cannot end a WorkCard that was already ended"])
+      end
+      it "should return a falsey value" do
+        output = subject.end!
+        expect(output).to_not be
+      end
+    end
+
+  end
+
 end

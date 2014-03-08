@@ -7,6 +7,8 @@ class WorkCard
   validates :start_at, presence: true, :if => :should_start_at_be_nonempty? #:ended?#, :if => :paused?
   validate :start_before_end?, :pause_not_longer_then_period?
 
+#  attr_accesor: bu
+
   def start_before_end?
     errors.add(:end_at, "can't be before the start") if ended? && started? && start_at>=end_at
   end
@@ -33,6 +35,28 @@ class WorkCard
   end
 
   def total_time
-  	end_at-start_at
+  	end_at-start_at - pause.to_i
+  end
+
+  def start!
+    errors.add(:start!,"cannot start a WorkCard that was alredy started") if started?
+    write_attribute(:start_at,Time.now()) unless started?
+  end
+
+  def end!
+    errors.add(:end!,"cannot end a WorkCard that was not started") unless started?
+    errors.add(:end!,"cannot end a WorkCard that was already ended") if ended?
+    set_end_at(Time.now()) if started? && !ended?
+  end
+
+  def set_start_at(x)
+    write_attribute(:start_at,x)
+  end
+
+  def set_end_at(x)
+    write_attribute(:end_at,x)
+  end
+  def set_pause(x)
+    write_attribute(:pause,x)
   end
 end

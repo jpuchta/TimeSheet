@@ -28,7 +28,7 @@ class WorkCardsController < ApplicationController
 
     respond_to do |format|
       if @work_card.save
-        format.html { redirect_to @work_card, notice: 'Work card was successfully created.' }
+        format.html { redirect_to work_card_path(@work_card), notice: 'Work card was successfully created.' }
         format.json { render action: 'show', status: :created, location: @work_card }
       else
         format.html { render action: 'new' }
@@ -54,7 +54,7 @@ class WorkCardsController < ApplicationController
           format.html { redirect_to @work_card, notice: 'Work card was successfully started.' }
           format.json { render action: 'show', status: :created, location: @work_card }
         else
-          format.html { render action: 'new' }
+          format.html { render action: 'show' }
           format.json { render json: @work_card.errors, status: :unprocessable_entity }
         end
       end

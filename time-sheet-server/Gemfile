@@ -36,7 +36,9 @@ group :test, :development do
 	gem 'rspec-rails'
 	gem 'rspec-core'
 	gem 'mongoid-rspec'
+	gem 'simplecov', '~> 0.7.1'
 end
+gem "timecop", group: :test
 
 
 group :doc do
