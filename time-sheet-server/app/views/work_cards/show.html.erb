@@ -1,4 +1,15 @@
 <p id="notice"><%= notice %></p>
+  <% if @work_card.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@work_card.errors.count, "error") %> prohibited this work_card from being saved:</h2>
+
+      <ul>
+      <% @work_card.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
 
 <p>
   <strong>Start at:</strong>

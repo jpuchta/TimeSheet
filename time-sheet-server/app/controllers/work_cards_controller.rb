@@ -40,24 +40,18 @@ class WorkCardsController < ApplicationController
   # POST /work_cards/start
   # POST /work_cards/1/start
   def start
-    work_card_params={"start_at" => Time.now()}
 
     @work_card = WorkCard.new() unless @work_card
 
     respond_to do |format|
-      if @work_card.started?
-        @work_card.errors.add "Work card was already started"
-        format.html { render action: 'show' }
-        format.json { render json: @work_card.errors, status: :unprocessable_entity }
+      if @work_card.start!
+        format.html { redirect_to work_card_path(@work_card), notice: 'Work card was successfully started.' }
+        format.json { render action: 'show', status: :started, location: @work_card }
       else
-        if @work_card.update(work_card_params)
-          format.html { redirect_to @work_card, notice: 'Work card was successfully started.' }
-          format.json { render action: 'show', status: :created, location: @work_card }
-        else
-          format.html { render action: 'show' }
-          format.json { render json: @work_card.errors, status: :unprocessable_entity }
-        end
+        format.html { render action: 'show' }#redirect_to work_card_path(@work_card) }
+        format.json { render json: @work_card.errors, status: :unprocessable_entity }
       end
+      
     end
   end
 

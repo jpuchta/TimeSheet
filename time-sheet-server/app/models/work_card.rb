@@ -38,15 +38,23 @@ class WorkCard
   	end_at-start_at - pause.to_i
   end
 
-  def start!
+  def start
     errors.add(:start!,"cannot start a WorkCard that was alredy started") if started?
     write_attribute(:start_at,Time.now()) unless started?
   end
 
-  def end!
+  def start!
+    save if start
+  end
+
+  def finish
     errors.add(:end!,"cannot end a WorkCard that was not started") unless started?
     errors.add(:end!,"cannot end a WorkCard that was already ended") if ended?
     set_end_at(Time.now()) if started? && !ended?
+  end
+
+  def finish!
+    save if finish
   end
 
   def set_start_at(x)

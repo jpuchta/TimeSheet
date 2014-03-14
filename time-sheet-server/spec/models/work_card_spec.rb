@@ -182,19 +182,19 @@ describe WorkCard do
     end
   end
 
-  describe "#end!" do
+  describe "#end" do
     describe "for empty work_card" do
       subject {WorkCard.new()}
       it "should not change any fields of a work_card" do
-        subject.end!
+        subject.finish
         check_work_card_fields(subject,nil,nil,Time.at(0))
       end
       it "should add add a note to errors" do
-        subject.end!
+        subject.finish
         expect(subject.errors.full_messages).to eq(["End! cannot end a WorkCard that was not started"])
       end
       it "should return a falsey value" do
-        output = subject.end!
+        output = subject.finish
         expect(output).to_not be
       end
     end
@@ -209,16 +209,16 @@ describe WorkCard do
       subject {WorkCard.new(start_at: start_time)}
       it "should set end_at to Time.now() and not change other fields" do
         t=Time.now()
-        subject.end!
+        subject.finish
         check_work_card_fields(subject,start_time,t,Time.at(0))
 #        expect(subject.end_at).to eq(t)
       end
       it "should not add annything to errors" do
-        subject.end!
+        subject.finish
         expect(subject.errors).to be_empty
       end
       it "should return a truthy value" do
-        output = subject.end!
+        output = subject.finish
         expect(output).to be
       end
     end
@@ -226,19 +226,24 @@ describe WorkCard do
     describe "for ended work_card" do
       subject {WorkCard.new(start_at:start_time, end_at:end_time)}
       it "should not change any fields of a work_card" do
-        subject.end!
+        subject.finish
         check_work_card_fields(subject,start_time,end_time,Time.at(0))
       end
       it "should add add a note to errors" do
-        subject.end!
+        subject.finish
         expect(subject.errors.full_messages).to eq(["End! cannot end a WorkCard that was already ended"])
       end
       it "should return a falsey value" do
-        output = subject.end!
+        output = subject.finish
         expect(output).to_not be
       end
     end
 
   end
+
+#  describe "methods with !" do
+ #   describe ".start!" do
+  #  end
+  #end
 
 end

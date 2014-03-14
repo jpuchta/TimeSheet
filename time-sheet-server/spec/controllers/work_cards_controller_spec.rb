@@ -211,17 +211,22 @@ describe WorkCardsController do
     let(:atributes_for_start_at_now) { { "start_at" => time_now } }
 
     describe "for non-existing work_card" do
-      it "creates a new WorkCard wit start_at set to Time.now() and assignes it as @work_card" do
-        allow(valid_work_card).to receive(:started?).and_return(false)
-
+      it "creates a new WorkCard" do
+        allow(valid_work_card).to receive(:start!).and_return(true)        
         expect(WorkCard).to receive(:new).and_return(valid_work_card)
-
-        expect(valid_work_card).to receive(:update).with(atributes_for_start_at_now)
         put :start, valid_session
-
+      end
+      it "assignsnewly created work_card as @work_card" do
+        allow(valid_work_card).to receive(:start!).and_return(true)        
+        allow(WorkCard).to receive(:new).and_return(valid_work_card)
+        put :start, valid_session
         expect(assigns(:work_card)).to be(valid_work_card)
       end
-
+      it "calls method .start! of the created work_card" do
+        allow(WorkCard).to receive(:new).and_return(valid_work_card)
+        expect(valid_work_card).to receive(:start!).and_return(true)
+        put :start, valid_session
+      end
       it "redirects to the newly created work_card" do  #I do not know, how to use mocks here?
         put :start, valid_session
         expect(response).to redirect_to(WorkCard.last)
@@ -229,33 +234,26 @@ describe WorkCardsController do
     end
 
     describe "for existing blank work_card" do
-      it "assigns the requested work_card as @work_card and sets start_at to Time.now" do
-        @work_card=valid_work_card
-        allow(@work_card).to receive(:started?).and_return(false)
-
-        mock_model_with_find
-
-        expect(@work_card).to receive(:update).with(atributes_for_start_at_now).once
-
-        put :start, {:id => @work_card.to_param}, valid_session
-        expect(assigns(:work_card)).to eq(@work_card)
-      end
-
       it "does not create any new work_card" do
-        @work_card=valid_work_card
-        allow(@work_card).to receive(:started?).and_return(false)
-        allow(@work_card).to receive(:update)
-
         mock_model_with_find
-
+        allow(valid_work_card).to receive(:start!).and_return(true)
         WorkCard.should_not receive(:new)
-        put :start, {:id => @work_card.to_param}, valid_session
+        put :start, {:id => valid_work_card.to_param}, valid_session
       end
-
+      it "assigns the requested work_card as @work_card" do
+        mock_model_with_find
+        allow(valid_work_card).to receive(:start!).and_return(true)
+        put :start, {:id => valid_work_card.to_param}, valid_session
+        expect(assigns(:work_card)).to eq(valid_work_card)
+      end
+      it "calls the method .start! of the requested work_card" do
+        mock_model_with_find
+        expect(valid_work_card).to receive(:start!).and_return(true)
+        put :start, {:id => valid_work_card.to_param}, valid_session
+      end
       it "redirects to the work_card" do  #I do not know, how to use mocks here?
         @work_card = WorkCard.create!
-        allow(@work_card).to receive(:started?).and_return(false)
-
+        allow(@work_card).to receive(:start!).and_return(true)
         put :start, {:id => @work_card.to_param}, valid_session
         expect(response).to redirect_to(@work_card)
       end
@@ -266,38 +264,26 @@ describe WorkCardsController do
     end
 
     describe "for existing started work_card" do
-      before do
-        @errors = double(ActiveModel::Errors)
-        allow(@errors).to receive(:add)
-      end
-
-      it "assignes the requested work_card as @work_card" do
-        @work_card=started_work_card
-        allow(@work_card).to receive(:errors).and_return(@errors)
-        @work_card.stub(:update)
-
+      it "does not create any new work_card" do
         mock_model_with_find(started_work_card)
-
-        put :start, {:id => @work_card.to_param}, valid_session
-        expect(assigns(:work_card)).to eq(@work_card)
+        allow(started_work_card).to receive(:start!).and_return(false)
+        WorkCard.should_not receive(:new)
+        put :start, {:id => started_work_card.to_param}, valid_session
       end
-
-      it "does not save nor update a work_card" do
-        @work_card=started_work_card
-        allow(@work_card).to receive(:errors).and_return(@errors)
-
+      it "assigns the requested work_card as @work_card" do
         mock_model_with_find(started_work_card)
-
-        @work_card.should_not receive(:update)
-        @work_card.should_not receive(:save)
-
-        put :start, {:id => @work_card.to_param}, valid_session
+        allow(started_work_card).to receive(:start!).and_return(false)
+        put :start, {:id => started_work_card.to_param}, valid_session
+        expect(assigns(:work_card)).to eq(started_work_card)
       end
-
+      it "calls the method .start! of the requested work_card" do
+        mock_model_with_find(started_work_card)
+        expect(started_work_card).to receive(:start!).and_return(false)
+        put :start, {:id => started_work_card.to_param}, valid_session
+      end
       it "redirects to the work_card" do  #I do not know, how to use mocks here?
         @work_card = WorkCard.create!
-        allow(@work_card).to receive(:started?).and_return(true)
-
+        allow(@work_card).to receive(:start!).and_return(false)
         put :start, {:id => @work_card.to_param}, valid_session
         expect(response).to redirect_to(@work_card)
       end
