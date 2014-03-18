@@ -7,6 +7,8 @@ TimeSheetServer::Application.routes.draw do
   put 'work_cards/start' => 'work_cards#start'
   put 'work_cards/:id/start' => 'work_cards#start'
   get 'work_cards/:id/start' => 'work_cards#start', via: [:put]
+  put 'work_cards/:id/finish' => 'work_cards#finish'
+  get 'work_cards/:id/finish' => 'work_cards#finish', via: [:put]
 
 
   # The priority is based upon order of creation: first created -> highest priority.

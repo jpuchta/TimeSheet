@@ -20,37 +20,24 @@ require 'spec_helper'
 
 describe WorkCardsController do
 
-  @work_card
-
-  before do
-#    WorkCard.delete_all
-  end
-
   after do
     WorkCard.delete_all
   end
 
-  # This should return the minimal set of attributes required to create a valid
-  # WorkCard. As you add validations to WorkCard, be sure to
-  # adjust the attributes here as well.
   let(:valid_attributes) { { "start_at" => "", "end_at" => "", "pause" => ""} }
   let(:valid_attributes_2) { { "start_at" => "2014-03-01 12:31:00", "end_at" => "", "pause" => "" } }
   
-  let(:work_card_id) { valid_attributes.to_param }
+  let(:valid_work_card) { mock_model(WorkCard) }
+  let(:started_work_card) { mock_model(WorkCard, {:started? => true})}
 
-  let(:valid_work_card) { double(:work_card, valid_attributes) }
-  let(:started_work_card) { double(WorkCard, {:started? => true})}
-  # This should return the minimal set of values that should be in the session
-  # in order to pass any filters (e.g. authentication) defined in
-  # WorkCardsController. Be sure to keep this updated too.
   let(:valid_session) { {} }
-  let (:mock_attempt_to_save_invalid_data) { WorkCard.any_instance.stub(:save).and_return(false) }
+
+  let(:mock_attempt_to_save_invalid_data) { WorkCard.any_instance.stub(:save).and_return(false) }
 
 
   describe "GET index" do
     it "assigns all work_cards as @work_cards" do
-      @work_card=valid_work_card
-      work_cards = [@work_card]
+      work_cards = [valid_work_card]
       WorkCard.should receive(:all).and_return(work_cards)
       get :index, {}, valid_session
       expect(assigns(:work_cards)).to eq(work_cards)
@@ -59,69 +46,66 @@ describe WorkCardsController do
 
   describe "GET show" do
     it "assigns the requested work_card as @work_card" do
-      @work_card=valid_work_card
       mock_model_with_find
-      get :show, {:id => @work_card.to_param}, valid_session
-      assigns(:work_card).should eq(@work_card)
+      get :show, {:id => valid_work_card.to_param}, valid_session
+      assigns(:work_card).should eq(valid_work_card)
     end
   end
 
   describe "GET new" do
     it "assigns a new work_card as @work_card" do
+      expect(WorkCard).to receive(:new).and_return(valid_work_card)
       get :new, {}, valid_session
 
-      expect(assigns(:work_card)).to be_a_new(WorkCard)
+      expect(assigns(:work_card)).to be_a(WorkCard)
     end
   end
 
   describe "GET edit" do
     it "assigns the requested work_card as @work_card" do
-      @work_card=valid_work_card
       mock_model_with_find
 
-      get :edit, {:id => @work_card.to_param}, valid_session
+      get :edit, {:id => valid_work_card.to_param}, valid_session
 
-      expect(assigns(:work_card)).to eq(@work_card)
+      expect(assigns(:work_card)).to eq(valid_work_card)
     end
   end
 
   describe "POST create" do
     describe "with valid params" do
-      it "creates a new WorkCard" do #I do not know, how to decompose it into two seperate tests?
-        @work_card=valid_work_card
-
-        expect(@work_card).to receive(:save).and_return(true).once
-        expect(WorkCard).to receive(:new).and_return(@work_card)
+      it "creates a new WorkCard" do
+        expect(valid_work_card).to receive(:save).and_return(true)
+        expect(WorkCard).to receive(:new).and_return(valid_work_card)
 
         post :create, {:work_card => valid_attributes}, valid_session
       end
 
       it "assigns a newly created work_card as @work_card" do
-        @work_card=valid_work_card
-        allow(@work_card).to receive(:save).once
-        allow(WorkCard).to receive(:new).and_return(@work_card)
+        allow(valid_work_card).to receive(:save).and_return(true)
+        allow(WorkCard).to receive(:new).and_return(valid_work_card)
 
         post :create, {:work_card => valid_attributes}, valid_session
 
-        expect(assigns(:work_card)).to be(@work_card)
+        expect(assigns(:work_card)).to be(valid_work_card)
       end
 
-      it "redirects to the created work_card" do #I do not know, how to use mocks here?
+      it "redirects to the created work_card" do
+        allow(valid_work_card).to receive(:save).and_return(true)
+        allow(WorkCard).to receive(:new).and_return(valid_work_card)      
+ 
         post :create, {:work_card => valid_attributes}, valid_session
-        expect(response).to redirect_to(WorkCard.last)
+        expect(response).to redirect_to(valid_work_card)
       end
     end
 
     describe "with invalid params" do
       it "assigns a newly created but unsaved work_card as @work_card" do
-        # Trigger the behavior that occurs when invalid params are submitted
         mock_attempt_to_save_invalid_data
         post :create, {:work_card => { "start_at" => "invalid value" }}, valid_session
         expect(assigns(:work_card)).to be_a_new(WorkCard)
       end
 
       it "re-renders the 'new' template" do
-        # Trigger the behavior that occurs when invalid params are submitted
         mock_attempt_to_save_invalid_data
         post :create, {:work_card => { "start_at" => "invalid value" }}, valid_session
         expect(response).to render_template("new")
@@ -133,47 +117,41 @@ describe WorkCardsController do
     describe "with valid params" do
       it "updates the requested work_card" do
         mock_model_with_find
-        expect(valid_work_card).to receive(:update).with(valid_attributes_2)
+        expect(valid_work_card).to receive(:update).with(valid_attributes_2).and_return(true)
         put :update, {:id => valid_work_card.to_param, :work_card => valid_attributes_2}, valid_session
       end
 
       it "assigns the requested work_card as @work_card" do
-        @work_card=valid_work_card
         mock_model_with_find
+        allow(valid_work_card).to receive(:update).with(valid_attributes_2).and_return(true)
 
-        allow(@work_card).to receive(:update).with(valid_attributes_2)
-        put :update, {:id => @work_card.to_param, :work_card => valid_attributes_2}, valid_session
-        expect(assigns(:work_card)).to eq(@work_card)
+        put :update, {:id => valid_work_card.to_param, :work_card => valid_attributes_2}, valid_session
+        expect(assigns(:work_card)).to eq(valid_work_card)
       end
 
-      it "redirects to the work_card" do  #I do not know, how to use mocks here?
-        @work_card = WorkCard.create! valid_attributes
-        put :update, {:id => @work_card.to_param, :work_card => valid_attributes_2}, valid_session
-        expect(response).to redirect_to(@work_card)
+      it "redirects to the work_card" do
+        mock_model_with_find
+        allow(valid_work_card).to receive(:update).with(valid_attributes_2).and_return(true)
+
+        put :update, {:id => valid_work_card.to_param, :work_card => valid_attributes_2}, valid_session
+        expect(response).to redirect_to(valid_work_card)
       end
     end
 
     describe "with invalid params" do
       it "assigns the work_card as @work_card" do
-        @work_card=valid_work_card
         mock_model_with_find
-        
-        allow(@work_card).to receive(:update).with({ "start_at" => "invalid value" })
-        # Trigger the behavior that occurs when invalid params are submitted
-        mock_attempt_to_save_invalid_data
+        allow(valid_work_card).to receive(:update).with({ "start_at" => "invalid value" }).and_return(false)
 
-        put :update, {:id => @work_card.to_param, :work_card => { "start_at" => "invalid value" }}, valid_session
-        expect(assigns(:work_card)).to eq(@work_card)
+        put :update, {:id => valid_work_card.to_param, :work_card => { "start_at" => "invalid value" }}, valid_session
+        expect(assigns(:work_card)).to eq(valid_work_card)
       end
 
       it "re-renders the 'edit' template" do
-        @work_card=valid_work_card
         mock_model_with_find
-        allow(@work_card).to receive(:update).with({ "start_at" => "invalid value" })
-        # Trigger the behavior that occurs when invalid params are submitted
-        mock_attempt_to_save_invalid_data
+        allow(valid_work_card).to receive(:update).with({ "start_at" => "invalid value" }).and_return(false)
 
-        put :update, {:id => @work_card.to_param, :work_card => { "start_at" => "invalid value" }}, valid_session
+        put :update, {:id => valid_work_card.to_param, :work_card => { "start_at" => "invalid value" }}, valid_session
         expect(response).to render_template("edit")
       end
     end
@@ -181,35 +159,24 @@ describe WorkCardsController do
 
   describe "DELETE destroy" do
     it "destroys the requested work_card" do
-      @work_card=valid_work_card
       mock_model_with_find
       
-      expect(@work_card).to receive(:destroy)
+      expect(valid_work_card).to receive(:destroy)
       
-      delete :destroy, {:id => @work_card.to_param}, valid_session
+      delete :destroy, {:id => valid_work_card.to_param}, valid_session
     end
 
     it "redirects to the work_cards list" do
-      @work_card=valid_work_card
       mock_model_with_find
 
-      expect(@work_card).to receive(:destroy)
+      allow(valid_work_card).to receive(:destroy)
       
-      delete :destroy, {:id => @work_card.to_param}, valid_session
+      delete :destroy, {:id => valid_work_card.to_param}, valid_session
       expect(response).to redirect_to(work_cards_url)
     end
   end
 
   describe "PUT start" do
-    before do
-      Timecop.freeze(time_now)
-    end
-    after do
-      Timecop.return
-    end
-    let(:time_now) { Date.today }
-    let(:atributes_for_start_at_now) { { "start_at" => time_now } }
-
     describe "for non-existing work_card" do
       it "creates a new WorkCard" do
         allow(valid_work_card).to receive(:start!).and_return(true)        
@@ -227,9 +194,11 @@ describe WorkCardsController do
         expect(valid_work_card).to receive(:start!).and_return(true)
         put :start, valid_session
       end
-      it "redirects to the newly created work_card" do  #I do not know, how to use mocks here?
+      it "redirects to the newly created work_card" do
+        allow(valid_work_card).to receive(:start!).and_return(true)        
+        allow(WorkCard).to receive(:new).and_return(valid_work_card)
         put :start, valid_session
-        expect(response).to redirect_to(WorkCard.last)
+        expect(response).to redirect_to(valid_work_card)
       end
     end
 
@@ -251,11 +220,11 @@ describe WorkCardsController do
         expect(valid_work_card).to receive(:start!).and_return(true)
         put :start, {:id => valid_work_card.to_param}, valid_session
       end
-      it "redirects to the work_card" do  #I do not know, how to use mocks here?
-        @work_card = WorkCard.create!
-        allow(@work_card).to receive(:start!).and_return(true)
-        put :start, {:id => @work_card.to_param}, valid_session
-        expect(response).to redirect_to(@work_card)
+      it "redirects to the work_card" do
+        mock_model_with_find
+        allow(valid_work_card).to receive(:start!).and_return(true)
+        put :start, {:id => valid_work_card.to_param}, valid_session
+        expect(response).to redirect_to(valid_work_card)
       end
 
       it "can be accessed by /work_card/[:id]/start" do
@@ -281,14 +250,69 @@ describe WorkCardsController do
         expect(started_work_card).to receive(:start!).and_return(false)
         put :start, {:id => started_work_card.to_param}, valid_session
       end
-      it "redirects to the work_card" do  #I do not know, how to use mocks here?
-        @work_card = WorkCard.create!
-        allow(@work_card).to receive(:start!).and_return(false)
-        put :start, {:id => @work_card.to_param}, valid_session
-        expect(response).to redirect_to(@work_card)
+      it "redirects to the work_card" do
+        mock_model_with_find(started_work_card)
+        allow(started_work_card).to receive(:start!).and_return(false)
+        put :start, {:id => started_work_card.to_param}, valid_session
+        expect(response).to redirect_to(started_work_card)
       end
     end
   end
+
+  describe "PUT finish" do
+    describe "for finishable work_card" do
+      it "assigns the requested work_card as @work_card" do
+        mock_model_with_find(started_work_card)
+        allow(started_work_card).to receive(:finish!).and_return(true)
+        put :finish, {:id => started_work_card.to_param}, valid_session
+        expect(assigns(:work_card)).to eq(started_work_card)
+      end
+      it "calls the method .finish! of the requested work_card" do
+        mock_model_with_find(started_work_card)
+        expect(started_work_card).to receive(:finish!).and_return(true)
+        put :finish, {:id => started_work_card.to_param}, valid_session
+      end
+      it "redirects to the work_card" do
+        mock_model_with_find(started_work_card)
+        allow(started_work_card).to receive(:finish!).and_return(true)
+        put :finish, {:id => started_work_card.to_param}, valid_session
+        expect(response).to redirect_to(started_work_card)
+      end
+      it "should have notice 'finished succesfully'" do
+        mock_model_with_find(started_work_card)
+        allow(started_work_card).to receive(:finish!).and_return(true)
+        put :finish, {:id => started_work_card.to_param}, valid_session
+        expect(flash[:notice]).to eq('Work card was successfully finished.')
+      end
+    end
+    describe "for unfinishable work_card" do
+      it "assigns the requested work_card as @work_card" do
+        mock_model_with_find
+        allow(valid_work_card).to receive(:finish!).and_return(false)
+        put :finish, {:id => valid_work_card.to_param}, valid_session
+        expect(assigns(:work_card)).to eq(valid_work_card)
+      end
+      it "calls the method .finish! of the requested work_card" do
+        mock_model_with_find
+        expect(valid_work_card).to receive(:finish!).and_return(false)
+        put :finish, {:id => valid_work_card.to_param}, valid_session
+      end
+      it "redirects to the work_card" do  #I do not know, how to use mocks here?
+        mock_model_with_find
+        allow(valid_work_card).to receive(:finish!).and_return(false)
+        put :finish, {:id => valid_work_card.to_param}, valid_session
+        expect(response).to redirect_to(valid_work_card)
+      end
+      it "should not have notice 'finished succesfully'" do
+        mock_model_with_find
+        allow(valid_work_card).to receive(:finish!).and_return(false)
+        put :finish, {:id => valid_work_card.to_param}, valid_session
+        expect(flash[:notice]).to_not eq('Work card was successfully finished.')
+      end
+    end
+  end
+
+
 
   def mock_model_with_find(model=valid_work_card)
      WorkCard.should receive(:find).with(model.to_param).and_return(model)

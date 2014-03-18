@@ -1,5 +1,5 @@
 class WorkCardsController < ApplicationController
-  before_action :set_work_card, only: [:show, :edit, :update, :destroy, :start]
+  before_action :set_work_card, only: [:show, :edit, :update, :destroy, :start, :finish]
 
   # GET /work_cards
   # GET /work_cards.json
@@ -37,8 +37,10 @@ class WorkCardsController < ApplicationController
     end
   end
 
-  # POST /work_cards/start
-  # POST /work_cards/1/start
+  # PUT /work_cards/start
+  # PUT /work_cards/start.json
+  # PATCH/PUT /work_cards/1/start
+  # PATCH/PUT /work_cards/1/start.json
   def start
 
     @work_card = WorkCard.new() unless @work_card
@@ -48,12 +50,28 @@ class WorkCardsController < ApplicationController
         format.html { redirect_to work_card_path(@work_card), notice: 'Work card was successfully started.' }
         format.json { render action: 'show', status: :started, location: @work_card }
       else
-        format.html { render action: 'show' }#redirect_to work_card_path(@work_card) }
+        format.html { redirect_to work_card_path(@work_card) }
         format.json { render json: @work_card.errors, status: :unprocessable_entity }
       end
       
     end
   end
+
+  # PUT /work_cards/1/finish
+  # PATCH/PUT /work_cards/1/finish.json
+  def finish
+    respond_to do |format|
+      if @work_card.finish!
+        format.html { redirect_to work_card_path(@work_card), notice: 'Work card was successfully finished.' }
+        format.json { render action: 'show', status: :started, location: @work_card }
+      else
+        format.html { redirect_to work_card_path(@work_card) }
+        format.json { render json: @work_card.errors, status: :unprocessable_entity }
+      end
+    end
+
+  end
+
 
   # PATCH/PUT /work_cards/1
   # PATCH/PUT /work_cards/1.json
